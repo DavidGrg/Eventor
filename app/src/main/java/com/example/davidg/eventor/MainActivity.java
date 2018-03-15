@@ -3,10 +3,7 @@ package com.example.davidg.eventor;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -92,11 +88,11 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_home) {
 
-            fragment = new HomeActivity();   //swithc to home fragment
+            fragment = new HomeFragment();   //switch to home fragment
 
         } else if (id == R.id.nav_explore) {
 
-            fragment = new ExploreActivity();  // switch to explore activity
+            fragment = new ExploreFragment();  // switch to explore activity
         }
 
 

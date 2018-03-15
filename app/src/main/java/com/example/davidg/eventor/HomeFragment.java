@@ -29,7 +29,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by DavidG on 14/03/2018.
  */
 
-public class HomeActivity extends Fragment {
+public class HomeFragment extends Fragment {
 
     @Nullable
     @Override
@@ -46,7 +46,7 @@ public class HomeActivity extends Fragment {
         //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle( "HOME" );
 
-        EventCall();
+//        EventCall();
     }
 
 
