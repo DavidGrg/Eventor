@@ -15,5 +15,5 @@ import retrofit2.http.GET;
 public interface ObservableEventApi {
 
     @GET("discovery/v2/events.json?apikey=oxutmWcAX9bC8A3DFFqGRLsJyCHszq9c")
-    Observable<List<Embedded>> getEvent();
+    Observable<Embedded> getEvent();
 }

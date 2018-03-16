@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,17 +13,15 @@ import android.widget.Toast;
 import com.example.davidg.eventor.Api.CallEventApi;
 import com.example.davidg.eventor.Api.ObservableEventApi;
 import com.example.davidg.eventor.Model.Embedded;
+import com.example.davidg.eventor.adapter.EventAdapter;
 
 import java.util.List;
 
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -31,12 +30,29 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HomeFragment extends Fragment {
 
+
+    View view;
+    private RecyclerView recyclerView;
+    private ObservableEventApi apiservice;
+
+    public static HomeFragment newInstance() {
+
+        Bundle args = new Bundle();
+
+        HomeFragment fragment = new HomeFragment();
+        fragment.setArguments( args );
+        return fragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         //returning our layout file
         //change R.layout.yourlayoutfilename for each of your fragments
-        return inflater.inflate( R.layout.fragment_home, container, false );
+        view = inflater.inflate( R.layout.fragment_home, container, false );
+        doNetworkCall();
+        return view;
+
     }
 
 
@@ -46,38 +62,48 @@ public class HomeFragment extends Fragment {
         //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle( "HOME" );
 
-//        EventCall();
+
     }
 
 
-    private void EventCall() {
+    private void doNetworkCall() {
+
+
 
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl( "https://app.ticketmaster.com/" )
+                .addCallAdapterFactory( RxJava2CallAdapterFactory.create() )
                 .addConverterFactory( GsonConverterFactory.create() )
                 .build();
 
-        CallEventApi apiservice = retrofit.create( CallEventApi.class );
-
-        Call<List<Embedded>> call = apiservice.getEvent();
-
-        call.enqueue( new Callback<List<Embedded>>() {
-            @Override
-            public void onResponse(Call<List<Embedded>> call, Response<List<Embedded>> response) {
-
-                Toast.makeText( getActivity(), "Helloooo", Toast.LENGTH_LONG ).show();
+        apiservice = retrofit.create( ObservableEventApi.class );
+        apiservice.getEvent()
+                .subscribeOn( Schedulers.io() )
+                .observeOn( AndroidSchedulers.mainThread() )
+                .subscribe( new Consumer<Embedded>() {
 
 
-            }
+                    @Override
+                    public void accept(Embedded embedded) throws Exception {
+                        recyclerView.setAdapter( new EventAdapter( embedded.getEvents() ) );
+                        recyclerView.setLayoutManager( new LinearLayoutManager( getActivity() ) );
+                        Toast.makeText( getActivity(), "EEEEEEEVVVVEEEENNT", Toast.LENGTH_SHORT ).show();
 
-            @Override
-            public void onFailure(Call<List<Embedded>> call, Throwable t) {
-
-
-            }
-        } );
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Toast.makeText( getActivity(), "SORRY", Toast.LENGTH_LONG ).show();
+                    }
+                } );
 
 
     }
 }
+
+
+
+
+
+
